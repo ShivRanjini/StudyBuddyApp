@@ -5,4 +5,35 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.divyansh.myapplication.MapsActivity" />
+    tools:context="com.example.divyansh.myapplication.MapsActivity">
+
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="40dp"
+        android:layout_gravity="bottom|end">
+
+        <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
+            android:tint="#FFFAF0"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:src="@android:drawable/ic_input_add" />
+        <android.support.design.widget.FloatingActionButton android:id="@+id/fab1"
+            android:tint="#FFFAF0"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:src="@android:drawable/ic_delete" />
+        <android.support.design.widget.FloatingActionButton android:id="@+id/fab2"
+            android:background="#FFFAF0"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:src="@android:drawable/ic_dialog_dialer" />
+    </LinearLayout>
+
+</fragment>

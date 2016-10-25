@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content" android:background="#FFFFFF">
 
     <ImageView
         android:id="@+id/algoMarker"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="match_parent"
         android:layout_marginRight="5dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/algomarker">
+        android:src="@drawable/ml">
     </ImageView>
 
     <LinearLayout
@@ -29,12 +29,20 @@
             android:textStyle="bold" />
 
         <TextView
+            android:layout_marginRight="5dp"
             android:id="@+id/snippet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ff7f7f7f"
             android:textSize="14dp" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/markerInfoButton"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/information2"/>
 
 
 </LinearLayout>
