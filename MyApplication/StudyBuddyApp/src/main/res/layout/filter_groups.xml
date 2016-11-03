@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+    <Switch
+        android:id="@+id/rangeCheckBox"
+        android:text="Range"
+        android:paddingLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/rangeSeekbar"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rangeCheckBox"
+        android:visibility="gone"
+        android:max="20"/>
+    
+    <TextView
+        android:id="@+id/rangeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:visibility="gone"
+        android:layout_below="@id/rangeSeekbar"/>
+
+    <Switch
+        android:id="@+id/kNearestGroupsCheckBox"
+        android:text="Filter k Groups"
+        android:paddingLeft="20dp"
+        android:layout_below="@+id/rangeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <NumberPicker
+        android:id="@+id/kNearestGroupsPicker"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/kNearestGroupsCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:scaleX="0.60"
+        android:scaleY="0.60">
+    </NumberPicker>
+
+    <Switch
+        android:id="@+id/capacityCheckBox"
+        android:layout_below="@+id/kNearestGroupsPicker"
+        android:paddingLeft="20dp"
+        android:text="Filter by group capacity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <NumberPicker
+        android:id="@+id/capacityGroupsPicker"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/capacityCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:scaleX="0.60"
+        android:scaleY="0.60">
+    </NumberPicker>
+
+    <Switch
+        android:id="@+id/timeCheckBox"
+        android:layout_below="@+id/capacityGroupsPicker"
+        android:paddingLeft="20dp"
+        android:text="Filter k Groups"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/dialogButtonOK2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" Filter Groups "
+        android:backgroundTint="@color/colorAccent"
+        android:layout_below="@+id/timeCheckBox"
+        android:layout_centerHorizontal="true"
+        />
+
+</RelativeLayout>

@@ -1,6 +1,6 @@
 package com.example.divyansh.myapplication;
 
-import android.app.Dialog;
+import android.app.*;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -23,7 +23,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +52,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,6 +65,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -79,6 +85,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Marker mGroup5;
     Button groupInfoButton;
     Context mContext;
+    ImageButton filterButton;
+    SeekBar rangeSeekBar;
+    TextView rangeTextView;
+    NumberPicker knnPicker;
+    NumberPicker capacityPicker;
+    Switch mRangeSwitch;
+    Switch mKFilterSwitch;
+    Switch mCapacityFilterSwitch;
+    HashMap<String, String> mSubjectsMap;
+
+    StudyGroups[] mStudyGroups;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,21 +112,141 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
         //AppCompatActivity appCompatActivity = new AppCompatActivity();
         //appCompatActivity.setSupportActionBar(toolbar);
+        mSubjectsMap = new SubjectsMap().getSubjectMap();
+        filterButton = (ImageButton) findViewById(R.id.FilterButton);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // custom dialog
+                final Dialog filterDialog = new Dialog(MapsActivity.this);
+                filterDialog.setContentView(R.layout.filter_groups);
+                filterDialog.setTitle("    Filter Groups");
+
+                mRangeSwitch = (Switch) filterDialog.findViewById(R.id.rangeCheckBox);
+                mKFilterSwitch = (Switch) filterDialog.findViewById(R.id.kNearestGroupsCheckBox);
+                mCapacityFilterSwitch = (Switch) filterDialog.findViewById(R.id.capacityCheckBox);
+                rangeSeekBar = (SeekBar) filterDialog.findViewById(R.id.rangeSeekbar);
+                rangeTextView = (TextView) filterDialog.findViewById(R.id.rangeText);
+                knnPicker = (NumberPicker) filterDialog.findViewById(R.id.kNearestGroupsPicker);
+                capacityPicker = (NumberPicker) filterDialog.findViewById(R.id.capacityGroupsPicker);
+
+                Button dialogButton2 = (Button) filterDialog.findViewById(R.id.dialogButtonOK2);
+                dialogButton2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        filterDialog.dismiss();
+                    }
+                });
+
+                filterDialog.show();
+
+
+                initializeFilterOptions();
+            }
+        });
         mapFragment.getMapAsync(this);
         FloatingActionButton listviewbutton = (FloatingActionButton) findViewById(R.id.fab2);
         listviewbutton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
                 startActivity(listIntent);
             }
         });
-        FloatingActionButton createbutton = (FloatingActionButton) findViewById(R.id.fab);
-        createbutton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton createviewbutton = (FloatingActionButton) findViewById(R.id.fab);
+        createviewbutton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 Intent createIntent = new Intent(MapsActivity.this, CreateScreen.class);
                 startActivity(createIntent);
+            }
+        });
+    }
+
+    public void initializeFilterOptions(){
+
+        mRangeSwitch.setChecked(false);
+        mRangeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    rangeSeekBar.setVisibility(View.VISIBLE);
+                    rangeTextView.setVisibility(View.VISIBLE);
+                }
+                else{
+                    rangeSeekBar.setVisibility(View.GONE);
+                    rangeTextView.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        rangeTextView.setText("    Miles: " + rangeSeekBar.getProgress() + "/" + rangeSeekBar.getMax());
+
+        rangeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progress = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
+                progress = progresValue;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                rangeTextView.setText("Range in miles: " + progress + "/" + seekBar.getMax());
+                Toast.makeText(getApplicationContext(), "Stopped tracking seekbar", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mKFilterSwitch.setChecked(false);
+        mKFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    knnPicker.setVisibility(View.VISIBLE);
+                } else{
+                    knnPicker.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        knnPicker.setMaxValue(10);
+        knnPicker.setMinValue(1);
+        knnPicker.setWrapSelectorWheel(true);
+
+        knnPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            int currentK = 1;
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                currentK = newVal;
+            }
+        });
+
+        mCapacityFilterSwitch.setChecked(false);
+        mCapacityFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    capacityPicker.setVisibility(View.VISIBLE);
+                } else {
+                    capacityPicker.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        capacityPicker.setMaxValue(10);
+        capacityPicker.setMinValue(1);
+        capacityPicker.setWrapSelectorWheel(true);
+
+        capacityPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            int currentCapacity = 1;
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                currentCapacity = newVal;
             }
         });
     }
@@ -182,7 +319,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCurrLocationMarker.remove();
         }
         new GetAllStudyGroups().execute("sx");
-        addMockMarkers(location);
+        //plotStudyGroups();
+        //addMockMarkers(location);
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         //MarkerOptions markerOptions = new MarkerOptions();
@@ -268,6 +406,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // other 'case' lines to check for other permissions this app might request.
             // You can add here other case statements according to your requirement.
+        }
+    }
+
+    private void plotStudyGroups(){
+        for(int i=0;i<mStudyGroups.length;i++){
+            StudyGroups currentGroup = mStudyGroups[i];
+            LatLng latLng = new LatLng(currentGroup.mGroupLatitude, currentGroup.mGroupLongitude);
+            MarkerOptions markerOptions1 = new MarkerOptions();
+            markerOptions1.position(latLng);
+            markerOptions1.title(currentGroup.mGroupName);
+            markerOptions1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            markerOptions1.snippet(currentGroup.mSubjectId);
+            mGroup1 = mMap.addMarker(markerOptions1);
         }
     }
 
@@ -448,8 +599,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            Log.d("My message",s);
+        protected void onPostExecute(String groupResponse) {
+            Log.d("My message",groupResponse);
+            try {
+                JSONArray groupList = new JSONArray(groupResponse);
+                mStudyGroups = new StudyGroups[groupList.length()];
+                for(int i=0;i<groupList.length();i++){
+                    JSONObject groupInfo = groupList.getJSONObject(i);
+                    String subjectName = mSubjectsMap.get(groupInfo.getString("subjectId"));
+                    mStudyGroups[i] = new StudyGroups(groupInfo.getString("id"),
+                            subjectName,
+                            groupInfo.getString("groupName"),
+                            groupInfo.getString("adminId"),
+                            groupInfo.getLong("startTimestamp"),
+                            groupInfo.getLong("endTimestamp"),
+                            groupInfo.getInt("capacity"),
+                            groupInfo.getInt("numMembers"),
+                            groupInfo.getString("topic"),
+                            groupInfo.getString("locationName"),
+                            groupInfo.getDouble("latitude"),
+                            groupInfo.getDouble("longitude"));
+                    Log.d("GroupId ",groupInfo.getString("id"));
+                    Log.d("SubjectId ",groupInfo.getString("subjectId"));
+                    Log.d("groupName ",groupInfo.getString("groupName"));
+                    Log.d("adminId ",groupInfo.getString("adminId"));
+                    Log.d("startTimestamp ",String.valueOf(groupInfo.getLong("startTimestamp")));
+                    Log.d("endTimestamp ", String.valueOf(groupInfo.getLong("endTimestamp")));
+                    Log.d("capacity ",String.valueOf(groupInfo.getInt("capacity")));
+                    Log.d("numMembers ",String.valueOf(groupInfo.getInt("numMembers")));
+                    Log.d("locationName ",groupInfo.getString("locationName"));
+                    Log.d("latitude ",String.valueOf(groupInfo.getDouble("latitude")));
+                    Log.d("longitude ", String.valueOf(groupInfo.getDouble("longitude")));
+                }
+                plotStudyGroups();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

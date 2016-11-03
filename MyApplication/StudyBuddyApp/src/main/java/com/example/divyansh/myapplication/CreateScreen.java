@@ -84,14 +84,14 @@ public class CreateScreen extends AppCompatActivity implements View.OnClickListe
         endtime.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
-        fromTimePickerDialog = new TimePickerDialog(this,R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
+        fromTimePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
 
             public void onTimeSet(TimePicker timePicker, int Hour, int Minute) {
                 starttime.setText( Hour + ":" + Minute);
             }
         }, newCalendar.HOUR_OF_DAY, newCalendar.MINUTE, true);//Yes 24 hour time
 
-        toTimePickerDialog = new TimePickerDialog(this,R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
+        toTimePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
 
         public void onTimeSet(TimePicker timePicker, int Hour, int Minute) {
         endtime.setText( Hour + ":" + Minute);
@@ -105,7 +105,7 @@ public class CreateScreen extends AppCompatActivity implements View.OnClickListe
         enddate.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
-        fromDatePickerDialog = new DatePickerDialog(this,R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+        fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
@@ -115,7 +115,7 @@ public class CreateScreen extends AppCompatActivity implements View.OnClickListe
 
         },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
-        toDatePickerDialog = new DatePickerDialog(this,R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+        toDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
