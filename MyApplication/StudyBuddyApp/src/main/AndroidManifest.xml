@@ -54,8 +54,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".Signup" />
+        <activity android:name=".ListActivity" />
         <activity android:name=".LoginActivity2" />
-        <activity android:name=".MapsListActivity"></activity>
+        <activity android:name=".CreateScreen"></activity>
     </application>
 
 </manifest>

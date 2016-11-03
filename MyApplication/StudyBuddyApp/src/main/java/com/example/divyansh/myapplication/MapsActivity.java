@@ -104,6 +104,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(listIntent);
             }
         });
+        FloatingActionButton createbutton = (FloatingActionButton) findViewById(R.id.fab);
+        createbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent createIntent = new Intent(MapsActivity.this, CreateScreen.class);
+                startActivity(createIntent);
+            }
+        });
     }
 
     /**
