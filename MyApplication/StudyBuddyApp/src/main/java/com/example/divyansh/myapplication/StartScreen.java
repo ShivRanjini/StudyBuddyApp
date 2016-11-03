@@ -10,6 +10,9 @@ public class StartScreen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        /*
+            Added comment
+        */
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen2);
 
