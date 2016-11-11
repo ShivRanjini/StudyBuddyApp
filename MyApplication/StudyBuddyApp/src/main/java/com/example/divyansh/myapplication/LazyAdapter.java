@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import static java.security.AccessController.getContext;
 
 public class LazyAdapter extends BaseAdapter {
 
@@ -42,34 +46,34 @@ public class LazyAdapter extends BaseAdapter {
         if(convertView==null)
             vi = inflater.inflate(R.layout.list_item, null);
         HashMap<String,String> field= data.get(position);
-        TextView title = (TextView)vi.findViewById(R.id.groupname); // title
-        TextView artist = (TextView)vi.findViewById(R.id.subject); // artist name
-        TextView duration = (TextView)vi.findViewById(R.id.duration); // duration
-        ImageView thumb_image=(ImageView)vi.findViewById(R.id.list_image); // thumb image
-        ImageView like_image=(ImageView)vi.findViewById(R.id.star); // thumb image
+        TextView groupName = (TextView)vi.findViewById(R.id.groupname);
+        TextView subject = (TextView)vi.findViewById(R.id.subject);
+        TextView duration = (TextView)vi.findViewById(R.id.duration);
+        ImageView subjectImage=(ImageView)vi.findViewById(R.id.list_image);
+        ImageView like_image=(ImageView)vi.findViewById(R.id.star);
+        TextView start_time = (TextView)vi.findViewById(R.id.start_time);
+        TextView location = (TextView)vi.findViewById(R.id.location);
 
-        // Setting all values in listview
-        title.setText(field.get("group"));
-        artist.setText(field.get("subject"));
+        location.setText(field.get("location"));
+        start_time.setText(field.get("start_time"));
+        groupName.setText(field.get("group"));
+        subject.setText(field.get("subject"));
         duration.setText(field.get("duration"));
-        if(position == 0)
-        {
-            thumb_image.setImageResource(R.drawable.geo);
-            like_image.setImageResource(android.R.drawable.btn_star_big_on);
+        like_image.setImageResource(android.R.drawable.btn_star_big_off);
+        like_image.setTag("star_off");
+        String subid="2";
+        HashMap<String, String> mSubjectsMap = new SubjectsMap().getSubjectMap();
+        Iterator it = mSubjectsMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry subidpair = (Map.Entry) it.next();
+            if(subidpair.getValue().equals(field.get("subject"))){
+                subid = (String)subidpair.getKey();
+                break;
+            }
+
         }
-        else if(position == 2)
-        {
-            thumb_image.setImageResource(R.drawable.data);
-            like_image.setImageResource(android.R.drawable.btn_star_big_off);
-        }
-        else if(position==1 || position == 4){
-        thumb_image.setImageResource(R.drawable.ml);
-        like_image.setImageResource(android.R.drawable.btn_star_big_off);}
-        else
-        {
-                thumb_image.setImageResource(R.drawable.network);
-            like_image.setImageResource(android.R.drawable.btn_star_big_on);
-        }
+        int Rid = activity.getApplicationContext().getResources().getIdentifier("gimg"+subid, "drawable", activity.getApplicationContext().getPackageName());
+        subjectImage.setImageResource(Rid);
 
         return vi;
     }

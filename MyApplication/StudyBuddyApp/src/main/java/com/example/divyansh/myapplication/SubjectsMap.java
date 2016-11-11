@@ -12,11 +12,11 @@ public class SubjectsMap {
 
     public SubjectsMap(){
         subjectMap = new HashMap<>();
-        subjectMap.put("1","GeoSpatial Database");
-        subjectMap.put("2","Computer Networks");
-        subjectMap.put("3","Machine Learning");
-        subjectMap.put("4","Artificial Intelligence");
-        subjectMap.put("5","Algorithms");
+        subjectMap.put("1","Artificial Intelligence");
+        subjectMap.put("2","Machine Learning");
+        subjectMap.put("3","Algorithms");
+        subjectMap.put("4","Computer Networks");
+        subjectMap.put("5","GeoSpatial Information Management");
     }
 
     public HashMap<String, String> getSubjectMap(){

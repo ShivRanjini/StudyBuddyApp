@@ -3,8 +3,6 @@ package com.example.divyansh.myapplication;
 import android.app.*;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,12 +14,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -53,13 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -96,12 +85,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     HashMap<String, String> mSubjectsMap;
 
     StudyGroups[] mStudyGroups;
-
+    boolean current_marker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+      /*  current_marker = getIntent().getBooleanExtra("curloc_marker",false);
+        if(current_marker)
+        {
+            plotGroupAfterCreate();
+        }*/
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -151,6 +144,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
+                listIntent.putExtra("StudyGroups",mStudyGroups);
                 startActivity(listIntent);
             }
         });
@@ -160,6 +154,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Intent createIntent = new Intent(MapsActivity.this, CreateScreen.class);
+                createIntent.putExtra("Latitude",mLastLocation.getLatitude());
+                createIntent.putExtra("Longitude",mLastLocation.getLongitude());
                 startActivity(createIntent);
             }
         });
@@ -422,6 +418,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+//    private void plotGroupAfterCreate(){
+//            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+//            MarkerOptions markerOptions1 = new MarkerOptions();
+//            markerOptions1.position(latLng);
+//            markerOptions1.title("group name");
+//            markerOptions1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+//            markerOptions1.snippet("sub name");
+//            mGroup1 = mMap.addMarker(markerOptions1);
+//
+//    }
+
     private void addMockMarkers(Location currentLocation){
         //Place current location marker
         LatLng latLng = new LatLng(currentLocation.getLatitude()+.0006, currentLocation.getLongitude()+.0004);
@@ -477,7 +484,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView text = (TextView) dialog.findViewById(R.id.text);
         text.setText(marker.getSnippet());
         ImageView image = (ImageView) dialog.findViewById(R.id.image);
-        image.setImageResource(R.drawable.ml);
+        image.setImageResource(R.drawable.gimg5);
 
         TextView topics = (TextView) dialog.findViewById(R.id.topics);
         topics.setText(" Topics : - Linear Regression");

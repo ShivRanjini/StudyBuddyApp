@@ -2,12 +2,13 @@ package com.example.divyansh.myapplication;
 
 import android.util.Log;
 import android.widget.Switch;
+import java.io.Serializable;
 
 /**
  * Created by Divyansh on 10/31/2016.
  */
 
-public class StudyGroups {
+public class StudyGroups  implements Serializable{
     String mGroupId;
     String mSubjectId;
     String mGroupName;
