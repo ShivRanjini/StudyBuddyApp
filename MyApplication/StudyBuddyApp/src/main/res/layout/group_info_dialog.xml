@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-
     <ImageView
         android:id="@+id/image"
         android:layout_width="80dp"
@@ -10,8 +9,8 @@
         android:layout_marginRight="5dp" />
 
     <TextView
-        android:id="@+id/text"
-        android:layout_marginTop="20dp"
+        android:id="@+id/subjectName"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
         android:textSize="8pt"
         android:layout_width="wrap_content"
@@ -29,7 +28,40 @@
         android:textColor="#000000"
         android:textStyle="italic"
         android:layout_toRightOf="@+id/image"
-        android:layout_below="@+id/text"/>
+        android:layout_below="@+id/subjectName"/>
+
+    <TextView
+        android:id="@+id/locationName"
+        android:layout_marginLeft="10dp"
+        android:textSize="6pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textStyle="italic"
+        android:layout_toRightOf="@+id/image"
+        android:layout_below="@+id/topics"/>
+
+    <TextView
+        android:id="@+id/groupTime"
+        android:layout_marginLeft="10dp"
+        android:textSize="6pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textStyle="normal"
+        android:layout_toRightOf="@+id/image"
+        android:layout_below="@+id/locationName"/>
+
+    <TextView
+        android:id="@+id/groupCapacityInfo"
+        android:layout_marginLeft="10dp"
+        android:textSize="6pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textStyle="normal"
+        android:layout_toRightOf="@+id/image"
+        android:layout_below="@+id/groupTime"/>
 
     <Button
         android:id="@+id/dialogButtonOK"
@@ -40,7 +72,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
         android:backgroundTint="@color/colorAccent"
-        android:layout_below="@+id/image"
+        android:layout_below="@+id/groupCapacityInfo"
         />
 
 </RelativeLayout>

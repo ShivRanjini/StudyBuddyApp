@@ -3,6 +3,7 @@ package com.example.divyansh.myapplication;
 import android.app.*;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -38,6 +39,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -54,6 +57,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -74,18 +78,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Marker mGroup5;
     Button groupInfoButton;
     Context mContext;
-    ImageButton filterButton;
-    SeekBar rangeSeekBar;
-    TextView rangeTextView;
-    NumberPicker knnPicker;
-    NumberPicker capacityPicker;
-    Switch mRangeSwitch;
-    Switch mKFilterSwitch;
+    FloatingActionButton filterButton;
+    FloatingActionButton rangeButton;
+    SeekBar knnSeekBar;
+    TextView knnTextView;
+    SeekBar capacitySeekbar;
+    TextView capacityTextView;
+    Switch mknnFilterSwitch;
     Switch mCapacityFilterSwitch;
     HashMap<String, String> mSubjectsMap;
+    SeekBar rangeSeekBar2;
+    Circle mCircle = null;
+
+    String currentUser = "ranjini";
 
     StudyGroups[] mStudyGroups;
-    boolean current_marker;
+
+    ArrayList<Integer> currentGroups;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,10 +114,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        rangeSeekBar2 = (SeekBar) findViewById(R.id.rangeSeekbar2);
         //AppCompatActivity appCompatActivity = new AppCompatActivity();
         //appCompatActivity.setSupportActionBar(toolbar);
         mSubjectsMap = new SubjectsMap().getSubjectMap();
-        filterButton = (ImageButton) findViewById(R.id.FilterButton);
+        filterButton = (FloatingActionButton) findViewById(R.id.filterOption);
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,18 +127,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 filterDialog.setContentView(R.layout.filter_groups);
                 filterDialog.setTitle("    Filter Groups");
 
-                mRangeSwitch = (Switch) filterDialog.findViewById(R.id.rangeCheckBox);
-                mKFilterSwitch = (Switch) filterDialog.findViewById(R.id.kNearestGroupsCheckBox);
-                mCapacityFilterSwitch = (Switch) filterDialog.findViewById(R.id.capacityCheckBox);
-                rangeSeekBar = (SeekBar) filterDialog.findViewById(R.id.rangeSeekbar);
-                rangeTextView = (TextView) filterDialog.findViewById(R.id.rangeText);
-                knnPicker = (NumberPicker) filterDialog.findViewById(R.id.kNearestGroupsPicker);
-                capacityPicker = (NumberPicker) filterDialog.findViewById(R.id.capacityGroupsPicker);
+                mknnFilterSwitch = (Switch) filterDialog.findViewById(R.id.knnSwitch);
+                knnSeekBar = (SeekBar) filterDialog.findViewById(R.id.knnSeekbar);
+                knnTextView = (TextView) filterDialog.findViewById(R.id.knnText);
+                mCapacityFilterSwitch = (Switch) filterDialog.findViewById(R.id.capacitySwitch);
+                capacitySeekbar = (SeekBar) filterDialog.findViewById(R.id.capacitySeekbar);
+                capacityTextView = (TextView) filterDialog.findViewById(R.id.capacityText);
 
                 Button dialogButton2 = (Button) filterDialog.findViewById(R.id.dialogButtonOK2);
                 dialogButton2.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        createFilterParameters(capacitySeekbar.getProgress());
                         filterDialog.dismiss();
                     }
                 });
@@ -137,6 +149,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 initializeFilterOptions();
             }
         });
+
+        rangeButton = (FloatingActionButton)  findViewById(R.id.rangeOption);
+        rangeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(rangeSeekBar2.getVisibility()==View.INVISIBLE){
+                    rangeSeekBar2.setVisibility(View.VISIBLE);
+                } else{
+                    if(mCircle!=null){
+                        mCircle.setRadius(0);
+                    }
+                    rangeSeekBar2.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        rangeSeekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int rangeProgress = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                rangeProgress = progress;
+                if(mCircle==null){
+                    CircleOptions circleOptions = new CircleOptions();
+                    circleOptions.fillColor(Color.parseColor("#447755ff"));
+                    circleOptions.strokeColor(Color.TRANSPARENT);
+                    circleOptions.center(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
+                    circleOptions.radius(rangeProgress*50);
+                    circleOptions.strokeWidth(3.0f);
+                    mCircle = mMap.addCircle(circleOptions);
+                } else {
+                    mCircle.setCenter(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
+                    mCircle.setRadius(rangeProgress*50);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         mapFragment.getMapAsync(this);
         FloatingActionButton listviewbutton = (FloatingActionButton) findViewById(R.id.fab2);
         listviewbutton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +206,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(listIntent);
             }
         });
-        FloatingActionButton createviewbutton = (FloatingActionButton) findViewById(R.id.fab);
+        ImageButton createviewbutton = (ImageButton) findViewById(R.id.FilterButton);
         createviewbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -163,24 +221,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void initializeFilterOptions(){
 
-        mRangeSwitch.setChecked(false);
-        mRangeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mknnFilterSwitch.setChecked(false);
+        mknnFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    rangeSeekBar.setVisibility(View.VISIBLE);
-                    rangeTextView.setVisibility(View.VISIBLE);
+                    knnSeekBar.setVisibility(View.VISIBLE);
+                    knnTextView.setVisibility(View.VISIBLE);
                 }
                 else{
-                    rangeSeekBar.setVisibility(View.GONE);
-                    rangeTextView.setVisibility(View.GONE);
+                    knnSeekBar.setVisibility(View.GONE);
+                    knnTextView.setVisibility(View.GONE);
                 }
             }
         });
 
-        rangeTextView.setText("    Miles: " + rangeSeekBar.getProgress() + "/" + rangeSeekBar.getMax());
+        knnTextView.setText("" + knnSeekBar.getProgress() + "/" + knnSeekBar.getMax());
 
-        rangeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        knnSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progress = 0;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
@@ -193,32 +251,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                rangeTextView.setText("Range in miles: " + progress + "/" + seekBar.getMax());
-                Toast.makeText(getApplicationContext(), "Stopped tracking seekbar", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        mKFilterSwitch.setChecked(false);
-        mKFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    knnPicker.setVisibility(View.VISIBLE);
-                } else{
-                    knnPicker.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        knnPicker.setMaxValue(10);
-        knnPicker.setMinValue(1);
-        knnPicker.setWrapSelectorWheel(true);
-
-        knnPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            int currentK = 1;
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                currentK = newVal;
+                knnTextView.setText("" + progress + "/" + seekBar.getMax());
             }
         });
 
@@ -227,24 +260,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
-                    capacityPicker.setVisibility(View.VISIBLE);
+                    capacitySeekbar.setVisibility(View.VISIBLE);
+                    capacityTextView.setVisibility(View.VISIBLE);
                 } else {
-                    capacityPicker.setVisibility(View.GONE);
+                    capacitySeekbar.setVisibility(View.GONE);
+                    capacityTextView.setVisibility(View.GONE);
                 }
             }
         });
 
-        capacityPicker.setMaxValue(10);
-        capacityPicker.setMinValue(1);
-        capacityPicker.setWrapSelectorWheel(true);
+        capacityTextView.setText("" + capacitySeekbar.getProgress() + "/" + capacitySeekbar.getMax());
 
-        capacityPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            int currentCapacity = 1;
+        capacitySeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int capacityprogress = 0;
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                currentCapacity = newVal;
+            public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
+                capacityprogress = progresValue;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                capacityTextView.setText("" + capacityprogress + "/" + seekBar.getMax());
             }
         });
+    }
+
+    public void createFilterParameters(int filterknn){
+        new FilterStudyGroups().execute(String.valueOf(filterknn));
     }
 
     /**
@@ -311,14 +357,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
+
+        new GetAllStudyGroups().execute("sx");
+        plotCurrentUserLocation();
+
+    }
+
+    public void plotCurrentUserLocation(){
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-        new GetAllStudyGroups().execute("sx");
-        //plotStudyGroups();
-        //addMockMarkers(location);
-        //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         //MarkerOptions markerOptions = new MarkerOptions();
         //markerOptions.position(latLng);
         //markerOptions.title("Current Position");
@@ -335,7 +384,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
-
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -472,27 +520,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGroup5 = mMap.addMarker(markerOptions5);
     }
 
+    public StudyGroups getInfoWindowStudyGroup(String groupName){
+        for(int i=0;i<mStudyGroups.length;i++){
+            StudyGroups currentGroup = mStudyGroups[i];
+            if(currentGroup.mGroupName.equals(groupName))
+                return currentGroup;
+        }
+        return null;
+    }
+
     @Override
     public void onInfoWindowClick(Marker marker) {
 
+        final StudyGroups clickedGroup = getInfoWindowStudyGroup(marker.getTitle());
         // custom dialog
         final Dialog dialog = new Dialog(MapsActivity.this);
         dialog.setContentView(R.layout.group_info_dialog);
         dialog.setTitle(marker.getTitle());
+        new GetJoinedGroups().execute("random");
 
         // set the custom dialog components - text, image and button
-        TextView text = (TextView) dialog.findViewById(R.id.text);
+        TextView text = (TextView) dialog.findViewById(R.id.subjectName);
         text.setText(marker.getSnippet());
         ImageView image = (ImageView) dialog.findViewById(R.id.image);
         image.setImageResource(R.drawable.gimg5);
 
         TextView topics = (TextView) dialog.findViewById(R.id.topics);
-        topics.setText(" Topics : - Linear Regression");
+        topics.setText("Topics : " + clickedGroup.mTopic);
+
+        TextView locationName = (TextView) dialog.findViewById(R.id.locationName);
+        locationName.setText("Location : " + clickedGroup.mLocationName);
+
+        TextView groupTimeInfo = (TextView) dialog.findViewById(R.id.groupTime);
+        groupTimeInfo.setText("Time : " + clickedGroup.mStartTime + " - " + clickedGroup.mEndTime);
+
+        TextView groupCapacityInfo = (TextView) dialog.findViewById(R.id.groupCapacityInfo);
+        groupCapacityInfo.setText("Capacity : " + clickedGroup.mNumMembers);
 
         Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+        if(currentGroups!=null){
+            for(int i=0;i<currentGroups.size();i++){
+                if(currentGroups.get(i)==Integer.parseInt(clickedGroup.mGroupId)){
+                    dialogButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new JoinStudyGroups().execute(clickedGroup.mGroupId);
                 dialog.dismiss();
             }
         });
@@ -638,6 +714,137 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("latitude ",String.valueOf(groupInfo.getDouble("latitude")));
                     Log.d("longitude ", String.valueOf(groupInfo.getDouble("longitude")));
                 }
+
+                plotStudyGroups();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class JoinStudyGroups extends AsyncTask<String,String,String> {
+        @Override
+        protected String doInBackground(String... key) {
+            StringBuffer response = new StringBuffer();
+            try{
+                String non_parametrized_url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/joinGroup?";
+                String url = non_parametrized_url + "groupId=" + key[0] + "&userId=" + currentUser;
+                URL obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("GET");
+
+                int responseCode = con.getResponseCode();
+            }catch(Exception e){
+                Log.w("Error", e.getMessage());
+            }
+            return response.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String filterApiResponse) {
+            Log.d("Filter response",filterApiResponse);
+        }
+    }
+
+    class GetJoinedGroups extends AsyncTask<String,String,String> {
+        @Override
+        protected String doInBackground(String... key) {
+            StringBuffer response = new StringBuffer();
+            try{
+                String url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/getJoinedGroups/"+currentUser;
+                URL obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("GET");
+
+                int responseCode = con.getResponseCode();
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+
+                in.close();
+            }catch(Exception e){
+                Log.w("Error", e.getMessage());
+            }
+            return response.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String groupResponse) {
+            Log.d("My message",groupResponse);
+            currentGroups = new ArrayList<>();
+            try {
+                JSONArray groupList = new JSONArray(groupResponse);
+                for(int i=0;i<groupList.length();i++){
+                    currentGroups.add(groupList.getInt(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class FilterStudyGroups extends AsyncTask<String,String,String> {
+        @Override
+        protected String doInBackground(String... key) {
+            StringBuffer response = new StringBuffer();
+            try{
+                String url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "maxCapacity=" + Integer.parseInt(key[0]);
+                URL obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("GET");
+
+                int responseCode = con.getResponseCode();
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+
+                in.close();
+            }catch(Exception e){
+                Log.w("Error", e.getMessage());
+            }
+            return response.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String groupResponse) {
+            Log.d("My message",groupResponse);
+            mMap.clear();
+            plotCurrentUserLocation();
+            try {
+                JSONArray groupList = new JSONArray(groupResponse);
+                mStudyGroups = new StudyGroups[groupList.length()];
+                for(int i=0;i<groupList.length();i++){
+                    JSONObject groupInfo = groupList.getJSONObject(i);
+                    String subjectName = mSubjectsMap.get(groupInfo.getString("subjectId"));
+                    mStudyGroups[i] = new StudyGroups(groupInfo.getString("id"),
+                            subjectName,
+                            groupInfo.getString("groupName"),
+                            groupInfo.getString("adminId"),
+                            groupInfo.getLong("startTimestamp"),
+                            groupInfo.getLong("endTimestamp"),
+                            groupInfo.getInt("capacity"),
+                            groupInfo.getInt("numMembers"),
+                            groupInfo.getString("topic"),
+                            groupInfo.getString("locationName"),
+                            groupInfo.getDouble("latitude"),
+                            groupInfo.getDouble("longitude"));
+                    Log.d("GroupId ",groupInfo.getString("id"));
+                    Log.d("SubjectId ",groupInfo.getString("subjectId"));
+                    Log.d("groupName ",groupInfo.getString("groupName"));
+                    Log.d("adminId ",groupInfo.getString("adminId"));
+                    Log.d("startTimestamp ",String.valueOf(groupInfo.getLong("startTimestamp")));
+                    Log.d("endTimestamp ", String.valueOf(groupInfo.getLong("endTimestamp")));
+                    Log.d("capacity ",String.valueOf(groupInfo.getInt("capacity")));
+                    Log.d("numMembers ",String.valueOf(groupInfo.getInt("numMembers")));
+                    Log.d("locationName ",groupInfo.getString("locationName"));
+                    Log.d("latitude ",String.valueOf(groupInfo.getDouble("latitude")));
+                    Log.d("longitude ", String.valueOf(groupInfo.getDouble("longitude")));
+                }
+
                 plotStudyGroups();
             } catch (JSONException e) {
                 e.printStackTrace();
