@@ -30,7 +30,7 @@
         android:id="@+id/capacitySwitch"
         android:layout_below="@+id/knnSeekbar"
         android:paddingLeft="20dp"
-        android:text="Grroup capacity"
+        android:text="Group capacity      "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -52,12 +52,72 @@
         android:layout_toRightOf="@id/capacitySeekbar"/>
 
     <Switch
-        android:id="@+id/timeCheckBox"
+        android:id="@+id/timeSwitch"
         android:layout_below="@+id/capacitySeekbar"
         android:paddingLeft="20dp"
-        android:text="Filter k Groups"
+        android:text="Time Search          "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/startTimeFilterRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:weightSum="1"
+        android:visibility="gone"
+        android:layout_below="@id/timeSwitch" >
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.20">
+
+            <EditText
+                android:id="@+id/start_date_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Start Date"
+                android:layout_marginTop="30px"
+                android:layout_marginBottom="30px"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:id="@+id/startdtbtnfilter"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="0.30"
+            android:scaleType="fitCenter"
+            android:src="@drawable/cal2"
+            android:background="@null"
+            />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.20">
+
+            <EditText
+                android:id="@+id/start_time_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Start Time"
+                android:layout_marginTop="30px"
+                android:layout_marginBottom="30px"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:id="@+id/starttimbtnfilter"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="0.30"
+            android:src="@drawable/clock"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            />
+    </LinearLayout>
 
     <Button
         android:id="@+id/dialogButtonOK2"
@@ -65,7 +125,7 @@
         android:layout_height="wrap_content"
         android:text=" Filter Groups "
         android:backgroundTint="@color/colorAccent"
-        android:layout_below="@+id/timeCheckBox"
+        android:layout_below="@+id/startTimeFilterRow"
         android:layout_centerHorizontal="true"
         />
 

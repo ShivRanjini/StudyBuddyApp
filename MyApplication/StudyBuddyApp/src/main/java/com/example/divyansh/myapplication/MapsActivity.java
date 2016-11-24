@@ -16,10 +16,12 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -27,6 +29,13 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.TimeZone;
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,6 +48,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -86,6 +96,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView capacityTextView;
     Switch mknnFilterSwitch;
     Switch mCapacityFilterSwitch;
+    Switch mTimeFilterSwitch;
+    EditText mStartdateFilter;
+    //EditText mEnddateFilter;
+    EditText mStarttimeFilter;
+    //EditText mEndtimeFilter;
+    ImageButton mStartdtbtnFilter;
+    ImageButton mStarttimbtnFilter;
+    View startTimeRowLayout;
     HashMap<String, String> mSubjectsMap;
     SeekBar rangeSeekBar2;
     Circle mCircle = null;
@@ -133,12 +151,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mCapacityFilterSwitch = (Switch) filterDialog.findViewById(R.id.capacitySwitch);
                 capacitySeekbar = (SeekBar) filterDialog.findViewById(R.id.capacitySeekbar);
                 capacityTextView = (TextView) filterDialog.findViewById(R.id.capacityText);
+                mTimeFilterSwitch = (Switch) filterDialog.findViewById(R.id.timeSwitch);
+                startTimeRowLayout = (View) filterDialog.findViewById(R.id.startTimeFilterRow);
+                mStartdateFilter = (EditText) filterDialog.findViewById(R.id.start_date_filter);
+                mStarttimeFilter = (EditText) filterDialog.findViewById(R.id.start_time_filter);
+                mStartdtbtnFilter = (ImageButton) filterDialog.findViewById(R.id.startdtbtnfilter);
+                mStarttimbtnFilter = (ImageButton) filterDialog.findViewById(R.id.starttimbtnfilter);
 
                 Button dialogButton2 = (Button) filterDialog.findViewById(R.id.dialogButtonOK2);
                 dialogButton2.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        createFilterParameters(capacitySeekbar.getProgress());
+                        createFilterParameters(capacitySeekbar.getProgress(),knnSeekBar.getProgress());
                         filterDialog.dismiss();
                     }
                 });
@@ -158,6 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     rangeSeekBar2.setVisibility(View.VISIBLE);
                 } else{
                     if(mCircle!=null){
+                        //rangeSeekBar2.setProgress(0);
                         mCircle.setRadius(0);
                     }
                     rangeSeekBar2.setVisibility(View.INVISIBLE);
@@ -170,18 +195,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 rangeProgress = progress;
-                if(mCircle==null){
-                    CircleOptions circleOptions = new CircleOptions();
+                CircleOptions circleOptions = new CircleOptions();
+
                     circleOptions.fillColor(Color.parseColor("#447755ff"));
                     circleOptions.strokeColor(Color.TRANSPARENT);
                     circleOptions.center(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
                     circleOptions.radius(rangeProgress*50);
                     circleOptions.strokeWidth(3.0f);
                     mCircle = mMap.addCircle(circleOptions);
-                } else {
-                    mCircle.setCenter(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
-                    mCircle.setRadius(rangeProgress*50);
-                }
+
             }
 
             @Override
@@ -191,7 +213,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if(rangeProgress==0){
+                    //new FilterStudyGroups().execute("Range",String.valueOf(rangeProgress*5000));
+                    new GetAllStudyGroups().execute("sx");
+                } else{
+                    new FilterStudyGroups().execute("Range",String.valueOf(rangeProgress*50));
+                }
             }
         });
 
@@ -287,10 +314,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 capacityTextView.setText("" + capacityprogress + "/" + seekBar.getMax());
             }
         });
+
+        mTimeFilterSwitch.setChecked(false);
+        mTimeFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    /*mStartdateFilter.setVisibility(View.VISIBLE);
+                    mStarttimeFilter.setVisibility(View.VISIBLE);
+                    mStartdtbtnFilter.setVisibility(View.VISIBLE);
+                    mStarttimbtnFilter.setVisibility(View.VISIBLE);*/
+                    startTimeRowLayout.setVisibility(View.VISIBLE);
+                } else {
+                    /*mStartdateFilter.setVisibility(View.GONE);
+                    mStarttimeFilter.setVisibility(View.GONE);
+                    mStartdtbtnFilter.setVisibility(View.GONE);
+                    mStarttimbtnFilter.setVisibility(View.GONE);
+                    */
+                    startTimeRowLayout.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
-    public void createFilterParameters(int filterknn){
-        new FilterStudyGroups().execute(String.valueOf(filterknn));
+    public void createFilterParameters(int groupCapacity, int filterknn){
+        new FilterStudyGroups().execute(String.valueOf(groupCapacity),String.valueOf(filterknn));
     }
 
     /**
@@ -377,8 +425,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mCurrLocationMarker.showInfoWindow();
 
         //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        //mMap.animateCamera(CameraUpdateFactory.zoomTo(14.8f));
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 13));
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))      // Sets the center of the map to location user
+                .zoom(17)                   // Sets the zoom
+                .bearing(0)                // Sets the orientation of the camera to east
+                .tilt(40)                   // Sets the tilt of the camera to 30 degrees
+                .build();                   // Creates a CameraPosition from the builder
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -551,17 +609,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView locationName = (TextView) dialog.findViewById(R.id.locationName);
         locationName.setText("Location : " + clickedGroup.mLocationName);
 
+        Date date = new Date(clickedGroup.mStartTime);
+        DateFormat format = new SimpleDateFormat("MM/dd/yy HH:mm");
+        format.setTimeZone(TimeZone.getTimeZone("Etc/PDT"));
+        String starttime = format.format(date);
+        Date enddate = new Date(clickedGroup.mEndTime);
+        String duration = Long.toString(((enddate.getTime()-date.getTime())/(60 * 60 * 1000)))+" hrs";
         TextView groupTimeInfo = (TextView) dialog.findViewById(R.id.groupTime);
-        groupTimeInfo.setText("Time : " + clickedGroup.mStartTime + " - " + clickedGroup.mEndTime);
+        groupTimeInfo.setText("Time : " + starttime + "        Duration : " + duration);
 
         TextView groupCapacityInfo = (TextView) dialog.findViewById(R.id.groupCapacityInfo);
-        groupCapacityInfo.setText("Capacity : " + clickedGroup.mNumMembers);
+        groupCapacityInfo.setText("Capacity : " + clickedGroup.mNumMembers + " of " + clickedGroup.mGroupCapacity);
 
         Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
         if(currentGroups!=null){
             for(int i=0;i<currentGroups.size();i++){
                 if(currentGroups.get(i)==Integer.parseInt(clickedGroup.mGroupId)){
-                    dialogButton.setVisibility(View.INVISIBLE);
+                    //dialogButton.setVisibility(View.INVISIBLE);
+                    dialogButton.setEnabled(false);
                 }
             }
         }
@@ -569,6 +634,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 new JoinStudyGroups().execute(clickedGroup.mGroupId);
+                clickedGroup.mNumMembers += 1;
                 dialog.dismiss();
             }
         });
@@ -684,6 +750,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String groupResponse) {
             Log.d("My message",groupResponse);
+            mMap.clear();
+            plotCurrentUserLocation();
             try {
                 JSONArray groupList = new JSONArray(groupResponse);
                 mStudyGroups = new StudyGroups[groupList.length()];
@@ -790,7 +858,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected String doInBackground(String... key) {
             StringBuffer response = new StringBuffer();
             try{
-                String url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "maxCapacity=" + Integer.parseInt(key[0]);
+                String url;
+
+                if(key[0].equals("Range")) {
+                    url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "latitude=" + mLastLocation.getLatitude() + "&longitude=" + mLastLocation.getLongitude() + "&range=" + Integer.parseInt(key[1]);
+                } else {
+                    if (Integer.parseInt(key[0]) == 0) {
+                        url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "latitude=" + mLastLocation.getLatitude() + "&longitude=" + mLastLocation.getLongitude() + "&k=" + Integer.parseInt(key[1]);
+                    } else if (Integer.parseInt(key[1]) == 0) {
+                        url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "maxCapacity=" + Integer.parseInt(key[0]);
+                    } else {
+                        url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "maxCapacity=" + Integer.parseInt(key[0]) + "&latitude=" + mLastLocation.getLatitude() + "&longitude=" + mLastLocation.getLongitude() + "&k=" + Integer.parseInt(key[1]);
+                    }
+                }
+
                 URL obj = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
                 con.setRequestMethod("GET");
