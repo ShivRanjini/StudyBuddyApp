@@ -59,8 +59,26 @@ public class LazyAdapter extends BaseAdapter {
         groupName.setText(field.get("group"));
         subject.setText(field.get("subject"));
         duration.setText(field.get("duration"));
-        like_image.setImageResource(android.R.drawable.btn_star_big_off);
-        like_image.setTag("star_off");
+        if(Integer.parseInt(field.get("isfav")) == 1)
+        {
+            like_image.setImageResource(android.R.drawable.btn_star_big_on);
+            like_image.setTag("star_on");
+        }
+        else if(Integer.parseInt(field.get("isfav")) == 0)
+
+        {
+            like_image.setImageResource(android.R.drawable.btn_star_big_off);
+            like_image.setTag("star_off");
+        }
+        else if(Integer.parseInt(field.get("isfav")) == 3)
+        {
+            like_image.setVisibility(View.INVISIBLE);
+        }
+        else if(Integer.parseInt(field.get("isfav")) == 2)
+        {
+            like_image.setImageResource(android.R.drawable.ic_menu_delete);
+            like_image.setTag("delete");
+        }
         String subid="2";
         HashMap<String, String> mSubjectsMap = new SubjectsMap().getSubjectMap();
         Iterator it = mSubjectsMap.entrySet().iterator();

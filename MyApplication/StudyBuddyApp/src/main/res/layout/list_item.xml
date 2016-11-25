@@ -91,6 +91,7 @@
         android:layout_height="50dip"
         android:src="@android:drawable/btn_star_big_on"
         android:layout_alignParentRight="true"
+        android:paddingTop="7pt"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>

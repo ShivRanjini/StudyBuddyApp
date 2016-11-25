@@ -11,13 +11,18 @@ import android.Manifest;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -143,7 +148,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // custom dialog
                 final Dialog filterDialog = new Dialog(MapsActivity.this);
                 filterDialog.setContentView(R.layout.filter_groups);
-                filterDialog.setTitle("    Filter Groups");
+                filterDialog.setTitle("Filter Groups");
 
                 mknnFilterSwitch = (Switch) filterDialog.findViewById(R.id.knnSwitch);
                 knnSeekBar = (SeekBar) filterDialog.findViewById(R.id.knnSeekbar);
@@ -230,10 +235,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
                 listIntent.putExtra("StudyGroups",mStudyGroups);
+                listIntent.putExtra("CallType","ListView");
                 startActivity(listIntent);
             }
         });
-        ImageButton createviewbutton = (ImageButton) findViewById(R.id.FilterButton);
+        ImageButton createviewbutton = (ImageButton) findViewById(R.id.PlusButton);
         createviewbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -242,6 +248,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 createIntent.putExtra("Latitude",mLastLocation.getLatitude());
                 createIntent.putExtra("Longitude",mLastLocation.getLongitude());
                 startActivity(createIntent);
+            }
+        });
+
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navmenu = (NavigationView) findViewById(R.id.nav_view);
+        navmenu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+
+                if (id == R.id.fav) {
+                    Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
+                    listIntent.putExtra("CallType","Favorite");
+                    startActivity(listIntent);
+                } else if (id == R.id.mygro) {
+                    Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
+                    listIntent.putExtra("CallType","MyGroup");
+                    startActivity(listIntent);
+                } else if (id == R.id.joined) {
+                    Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
+                    listIntent.putExtra("CallType","JoinedGroup");
+                    startActivity(listIntent);
+                }
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+
             }
         });
     }
@@ -721,7 +761,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-
 
     class GetAllStudyGroups extends AsyncTask<String,String,String> {
         @Override
