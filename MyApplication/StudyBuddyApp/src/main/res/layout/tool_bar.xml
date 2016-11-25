@@ -21,8 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:hint="Search Study groups                     "
-                android:textSize="8pt"
-                android:textAppearance="@color/wallet_hint_foreground_holo_light"/>
+                android:textSize="8pt"/>
 
             <ImageButton
                 android:layout_width="wrap_content"
