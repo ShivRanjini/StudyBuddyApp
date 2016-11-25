@@ -79,7 +79,7 @@ public class ListActivity extends Activity {
                                     int position, long id) {
                 ImageView like_image=(ImageView)view.findViewById(R.id.star);
                 if(like_image.getTag().equals("star_off")) {
-                    like_image.setImageResource(android.R.drawable.btn_star_big_on);
+                    like_image.setImageResource(R.drawable.fav_on);
                     FavGroup postReq = new FavGroup();
                     postReq.execute("ranjini",studygroups[position].mGroupId);
 
@@ -94,7 +94,7 @@ public class ListActivity extends Activity {
                 }
                 else if((like_image.getTag().equals("star_on")))
                 {
-                    like_image.setImageResource(android.R.drawable.btn_star_big_off);
+                    like_image.setImageResource(R.drawable.fav_off);
                     like_image.setTag("star_off");
                 }
 

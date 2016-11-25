@@ -61,13 +61,13 @@ public class LazyAdapter extends BaseAdapter {
         duration.setText(field.get("duration"));
         if(Integer.parseInt(field.get("isfav")) == 1)
         {
-            like_image.setImageResource(android.R.drawable.btn_star_big_on);
+            like_image.setImageResource(R.drawable.fav_on);
             like_image.setTag("star_on");
         }
         else if(Integer.parseInt(field.get("isfav")) == 0)
 
         {
-            like_image.setImageResource(android.R.drawable.btn_star_big_off);
+            like_image.setImageResource(R.drawable.fav_off);
             like_image.setTag("star_off");
         }
         else if(Integer.parseInt(field.get("isfav")) == 3)
