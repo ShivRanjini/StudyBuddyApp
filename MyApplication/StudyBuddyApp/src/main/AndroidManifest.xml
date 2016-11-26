@@ -20,6 +20,8 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
+        android:largeHeap="true"
         android:icon="@drawable/study_buddy_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"

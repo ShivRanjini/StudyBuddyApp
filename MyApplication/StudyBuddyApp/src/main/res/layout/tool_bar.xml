@@ -15,7 +15,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:src="@android:drawable/ic_input_add"
-                android:layout_weight=".30"/>
+                android:layout_weight=".30"
+                android:background="@android:color/transparent"/>
 
 
             <AutoCompleteTextView
@@ -31,6 +32,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/newsearch"
                 android:layout_weight=".30"
-                android:layout_gravity="end"/>
+                android:layout_gravity="end"
+                android:background="@android:color/transparent"/>
     </LinearLayout>
 </android.support.v7.widget.Toolbar>
