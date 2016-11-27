@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group >
+        <item
+            android:id="@+id/pro"
+            android:icon="@drawable/profile"
+            android:title="Profile" />
+        <item
+            android:id="@+id/fav"
+            android:icon="@drawable/favourite"
+            android:title="Favorites" />
+        <item
+            android:id="@+id/mygro"
+            android:icon="@drawable/gro"
+            android:title="My Groups" />
+        <item
+            android:id="@+id/joined"
+            android:icon="@drawable/groups"
+            android:title="Joined Groups" />
+
+    </group>
+
+</menu>

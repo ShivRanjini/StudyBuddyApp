@@ -7,36 +7,34 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        
+        android:orientation="horizontal"
+        android:weightSum="1">
 
-
-            <ImageButton
-                android:id="@+id/FilterButton"
+        <ImageButton
+                android:id="@+id/PlusButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/newfilter" />
+                android:src="@android:drawable/ic_input_add"
+                android:layout_weight=".30"
+                android:background="@android:color/transparent"/>
+
 
             <AutoCompleteTextView
                 android:id="@+id/searchGroupsBar"
                 android:layout_width="wrap_content"
+                android:layout_weight=".50"
                 android:layout_height="match_parent"
-                android:hint="Search Study groups                     "
+                android:hint="Search Study groups"
                 android:textSize="8pt"
-                android:theme="@style/Autocomplete"
-                android:textAppearance="@color/wallet_hint_foreground_holo_light"/>
+                android:textAppearance="@color/colorPrimary"
+                android:theme="@style/Autocomplete" />
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:src="@drawable/newsearch"
-                android:layout_gravity="end"/>
-
-
-
-
+                android:layout_weight=".30"
+                android:layout_gravity="end"
+                android:background="@android:color/transparent"/>
     </LinearLayout>
-
-
-
 </android.support.v7.widget.Toolbar>
