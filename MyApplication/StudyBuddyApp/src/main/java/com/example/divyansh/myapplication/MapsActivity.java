@@ -854,8 +854,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(currentGroups!=null){
             for(int i=0;i<currentGroups.size();i++){
                 if(currentGroups.get(i)==Integer.parseInt(clickedGroup.mGroupId)){
-                    dialogButton.setVisibility(View.INVISIBLE);
-                    //dialogButton.setEnabled(false);
+                    //dialogButton.setVisibility(View.INVISIBLE);
+                    dialogButton.setEnabled(false);
+                    //dialogButton.setBackgroundColor(Color.GRAY);
+                    dialogButton.setAlpha(0.7f);
+                    dialogButton.setText("You have joined!");
                 }
             }
         }
