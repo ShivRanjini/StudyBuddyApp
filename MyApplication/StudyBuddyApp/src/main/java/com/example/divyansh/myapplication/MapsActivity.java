@@ -172,8 +172,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 // custom dialog
                 final Dialog filterDialog = new Dialog(MapsActivity.this);
+                filterDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 filterDialog.setContentView(R.layout.filter_groups);
-                filterDialog.setTitle("        Filter Groups");
+
 
                 mknnFilterSwitch = (Switch) filterDialog.findViewById(R.id.knnSwitch);
                 knnSeekBar = (SeekBar) filterDialog.findViewById(R.id.knnSeekbar);
