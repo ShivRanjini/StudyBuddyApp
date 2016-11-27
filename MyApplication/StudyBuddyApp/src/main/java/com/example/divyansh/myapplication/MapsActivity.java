@@ -571,6 +571,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
         mMap.setOnInfoWindowClickListener(this);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng point) {
+                MarkerOptions marker = new MarkerOptions()
+                        .position(new LatLng(point.latitude, point.longitude))
+                        .title("New Marker");
+                mMap.addMarker(marker);
+                Toast.makeText(MapsActivity.this, String.valueOf(point.latitude),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     protected synchronized void buildGoogleApiClient() {
