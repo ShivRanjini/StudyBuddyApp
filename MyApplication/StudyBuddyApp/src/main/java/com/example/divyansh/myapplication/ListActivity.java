@@ -25,6 +25,8 @@ import java.security.acl.Group;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -116,13 +118,23 @@ public class ListActivity extends Activity {
     public void setListOfGroups(StudyGroups[] studygroups,List<Integer> favGroup) {
         GroupList = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> groupinfo;
+        List<StudyGroups> groupList = new ArrayList<StudyGroups>();
+        for (int i = 0; i < studygroups.length; i++){
+            groupList.add(studygroups[i]);
+        }
+        Collections.sort(groupList, new Comparator<StudyGroups>() {
+            @Override
+            public int compare(StudyGroups o1, StudyGroups o2) {
+                return (int)(o1.mStartTime - o2.mStartTime);
+            }
+        });
         if(studygroups != null) {
-            for (int i = 0; i < studygroups.length; i++) {
+            for (int i = 0; i < groupList.size(); i++) {
                 if(type.equals("JoinedGroup")||type.equals("Favorite"))
                 {   int flag = 0;
                     for(int j=0;j<favGroup.size();j++)
                     {
-                        if(favGroup.get(j) == Integer.parseInt(studygroups[i].mGroupId))
+                        if(favGroup.get(j) == Integer.parseInt(groupList.get(i).mGroupId))
                         {
                             flag = 1;
                             break;
@@ -133,20 +145,20 @@ public class ListActivity extends Activity {
                 }
                 if(type.equals("MyGroup"))
                 {
-                   if(!studygroups[i].mAdminId.equals(username)) {
+                   if(!groupList.get(i).mAdminId.equals(username)) {
                        continue;
 
                     }
                 }
                groupinfo = new HashMap<String, String>();
                 groupinfo.put(KEY_ID, Integer.toString(i));
-                groupinfo.put(KEY_SUBJECT, studygroups[i].mSubjectId);
-                groupinfo.put(KEY_GROUP, studygroups[i].mGroupName);
-                groupinfo.put(KEY_GROUP_ID, studygroups[i].mGroupId);
+                groupinfo.put(KEY_SUBJECT, groupList.get(i).mSubjectId);
+                groupinfo.put(KEY_GROUP, groupList.get(i).mGroupName);
+                groupinfo.put(KEY_GROUP_ID, groupList.get(i).mGroupId);
                 if(type.equals("ListView")) {
                     groupinfo.put(ISFAV, "0");
                     for (int j = 0; j < favGroup.size(); j++) {
-                        if (favGroup.get(j) == Integer.parseInt(studygroups[i].mGroupId)) {
+                        if (favGroup.get(j) == Integer.parseInt(groupList.get(i).mGroupId)) {
                             groupinfo.put(ISFAV, "1");
                             break;
                         }
@@ -161,13 +173,13 @@ public class ListActivity extends Activity {
                 {
                     groupinfo.put(ISFAV, "2");
                 }
-                Date date = new Date(studygroups[i].mStartTime);
+                Date date = new Date(groupList.get(i).mStartTime);
                 DateFormat format = new SimpleDateFormat("MM/dd/yy HH:mm");
                 format.setTimeZone(TimeZone.getTimeZone("Etc/PDT"));
                 String starttime = format.format(date);
-                Date enddate = new Date(studygroups[i].mEndTime);
+                Date enddate = new Date(groupList.get(i).mEndTime);
                 groupinfo.put(KEY_DURATION,  Long.toString(((enddate.getTime()-date.getTime())/(60 * 60 * 1000)))+" hrs");
-                groupinfo.put(LOCATION,studygroups[i].mLocationName);
+                groupinfo.put(LOCATION,groupList.get(i).mLocationName);
                 groupinfo.put(START_TIME,starttime);
                 GroupList.add(groupinfo);
 

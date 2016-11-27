@@ -1,1 +1,3 @@
 *.name
+MyApplication/.idea/gradle.xml
+MyApplication/StudyBuddyApp/src/debug/res/values/google_maps_api.xml

@@ -4,15 +4,18 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="5dp" />
 
     <TextView
-        android:id="@+id/subjectName"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="8pt"
+        android:id="@+id/groupNameInfo"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="5dp"
+        android:paddingBottom="20dp"
+        android:paddingRight="5dp"
+        android:textSize="10pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
@@ -20,59 +23,70 @@
         android:layout_toRightOf="@+id/image"/>
 
     <TextView
-        android:id="@+id/topics"
+        android:id="@+id/subjectName"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
-        android:textSize="6pt"
+        android:textSize="9pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:textStyle="italic"
-        android:layout_toRightOf="@+id/image"
+        android:textStyle="normal"
+        android:layout_below="@+id/image"/>
+
+    <TextView
+        android:id="@+id/topics"
+        android:layout_marginLeft="10dp"
+        android:textSize="9pt"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textColor="#000000"
+        android:textStyle="normal"
+        android:fontFamily="sans-serif-bold"
         android:layout_below="@+id/subjectName"/>
 
     <TextView
         android:id="@+id/locationName"
         android:layout_marginLeft="10dp"
-        android:textSize="6pt"
+        android:textSize="9pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:textStyle="italic"
-        android:layout_toRightOf="@+id/image"
+        android:textStyle="normal"
         android:layout_below="@+id/topics"/>
 
     <TextView
         android:id="@+id/groupTime"
         android:layout_marginLeft="10dp"
-        android:textSize="6pt"
+        android:textSize="9pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
         android:textStyle="normal"
-        android:layout_toRightOf="@+id/image"
         android:layout_below="@+id/locationName"/>
 
     <TextView
         android:id="@+id/groupCapacityInfo"
         android:layout_marginLeft="10dp"
-        android:textSize="6pt"
+        android:layout_marginBottom="10dp"
+        android:textSize="9pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
         android:textStyle="normal"
-        android:layout_toRightOf="@+id/image"
         android:layout_below="@+id/groupTime"/>
 
     <Button
         android:id="@+id/dialogButtonOK"
+        android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=" Join Group "
+        android:text="Join"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
         android:backgroundTint="@color/colorAccent"
-        android:layout_below="@+id/groupCapacityInfo"
-        />
+        android:textColor="@android:color/white"
+        android:textSize="15dp"
+        android:layout_below="@+id/groupCapacityInfo"/>
 
 </RelativeLayout>

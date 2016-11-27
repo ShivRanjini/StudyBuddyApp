@@ -31,12 +31,12 @@
             android:tint="#FFFAF0"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_vertical_margin"
-            android:src="@android:drawable/ic_menu_mapmode" />
+            android:src="@drawable/filter" />
         <android.support.design.widget.FloatingActionButton android:id="@+id/rangeOption"
             android:tint="#FFFAF0"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_vertical_margin"
-            android:src="@android:drawable/ic_menu_view" />
+            android:src="@drawable/range" />
         <android.support.design.widget.FloatingActionButton android:id="@+id/fab2"
             android:background="#FFFAF0"
             android:layout_width="wrap_content" android:layout_height="wrap_content"

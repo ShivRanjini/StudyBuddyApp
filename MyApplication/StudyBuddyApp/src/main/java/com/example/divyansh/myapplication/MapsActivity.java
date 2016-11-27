@@ -24,6 +24,7 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -172,8 +173,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 // custom dialog
                 final Dialog filterDialog = new Dialog(MapsActivity.this);
+                filterDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 filterDialog.setContentView(R.layout.filter_groups);
-                filterDialog.setTitle("        Filter Groups");
+
 
                 mknnFilterSwitch = (Switch) filterDialog.findViewById(R.id.knnSwitch);
                 knnSeekBar = (SeekBar) filterDialog.findViewById(R.id.knnSeekbar);
@@ -570,6 +572,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
         mMap.setOnInfoWindowClickListener(this);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng point) {
+                MarkerOptions marker = new MarkerOptions()
+                        .position(new LatLng(point.latitude, point.longitude))
+                        .title("New Marker");
+                mMap.addMarker(marker);
+                Toast.makeText(MapsActivity.this, String.valueOf(point.latitude),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -795,8 +808,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final StudyGroups clickedGroup = getInfoWindowStudyGroup(marker.getTitle());
         // custom dialog
         final Dialog dialog = new Dialog(MapsActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.group_info_dialog);
-        dialog.setTitle(marker.getTitle());
+        TextView groupName = (TextView) dialog.findViewById(R.id.groupNameInfo);
+        groupName.setText(marker.getTitle());
         new GetJoinedGroups().execute("random");
 
         // set the custom dialog components - text, image and button
@@ -830,7 +845,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Date enddate = new Date(clickedGroup.mEndTime);
         String duration = Long.toString(((enddate.getTime()-date.getTime())/(60 * 60 * 1000)))+" hrs";
         TextView groupTimeInfo = (TextView) dialog.findViewById(R.id.groupTime);
-        groupTimeInfo.setText("Time : " + starttime + "        Duration : " + duration);
+        groupTimeInfo.setText("Time : " + starttime + "              Duration : " + duration);
 
         TextView groupCapacityInfo = (TextView) dialog.findViewById(R.id.groupCapacityInfo);
         groupCapacityInfo.setText("Capacity : " + clickedGroup.mNumMembers + " of " + clickedGroup.mGroupCapacity);
