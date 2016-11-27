@@ -4,7 +4,7 @@
 
     <Switch
         android:id="@+id/knnSwitch"
-        android:text="K Nearest Groups "
+        android:text="K Nearest Groups            "
         android:paddingLeft="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -30,7 +30,7 @@
         android:id="@+id/capacitySwitch"
         android:layout_below="@+id/knnSeekbar"
         android:paddingLeft="20dp"
-        android:text="Group capacity      "
+        android:text="Group capacity                 "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -55,15 +55,17 @@
         android:id="@+id/timeSwitch"
         android:layout_below="@+id/capacitySeekbar"
         android:paddingLeft="20dp"
-        android:text="Time Search          "
+        android:text="Time Search                     "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/startTimeFilterRow"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="2dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:weightSum="1"
         android:visibility="gone"
         android:layout_below="@id/timeSwitch" >
@@ -77,9 +79,10 @@
                 android:id="@+id/start_date_filter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="12sp"
                 android:hint="Start Date"
-                android:layout_marginTop="30px"
-                android:layout_marginBottom="30px"
+                android:layout_marginTop="5px"
+                android:layout_marginBottom="5px"
                 />
 
         </android.support.design.widget.TextInputLayout>
@@ -102,14 +105,79 @@
                 android:id="@+id/start_time_filter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="12sp"
                 android:hint="Start Time"
-                android:layout_marginTop="30px"
-                android:layout_marginBottom="30px"
+                android:layout_marginTop="5px"
+                android:layout_marginBottom="5px"
                 />
 
         </android.support.design.widget.TextInputLayout>
         <ImageButton
             android:id="@+id/starttimbtnfilter"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="0.30"
+            android:src="@drawable/clock"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/endFilterTimeRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:weightSum="1"
+        android:visibility="gone"
+        android:layout_below="@id/startTimeFilterRow" >
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.20">
+
+            <EditText
+                android:id="@+id/end_date_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="End Date"
+                android:textSize="12sp"
+                android:layout_marginTop="5px"
+                android:layout_marginBottom="5px"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:id="@+id/enddtbtnfilter"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="0.30"
+            android:scaleType="fitCenter"
+            android:src="@drawable/cal2"
+            android:background="@null"
+            />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.20">
+
+            <EditText
+                android:id="@+id/end_time_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="End Time"
+                android:textSize="12sp"
+                android:layout_marginTop="5px"
+                android:layout_marginBottom="5px"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:id="@+id/endtimbtnfilter"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_weight="0.30"
@@ -125,7 +193,7 @@
         android:layout_height="wrap_content"
         android:text=" Filter Groups "
         android:backgroundTint="@color/colorAccent"
-        android:layout_below="@+id/startTimeFilterRow"
+        android:layout_below="@+id/endFilterTimeRow"
         android:layout_centerHorizontal="true"
         />
 

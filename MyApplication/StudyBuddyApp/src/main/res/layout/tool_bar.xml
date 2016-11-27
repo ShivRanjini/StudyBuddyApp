@@ -18,10 +18,12 @@
                 android:src="@drawable/newfilter" />
 
             <AutoCompleteTextView
+                android:id="@+id/searchGroupsBar"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:hint="Search Study groups                     "
                 android:textSize="8pt"
+                android:theme="@style/Autocomplete"
                 android:textAppearance="@color/wallet_hint_foreground_holo_light"/>
 
             <ImageButton

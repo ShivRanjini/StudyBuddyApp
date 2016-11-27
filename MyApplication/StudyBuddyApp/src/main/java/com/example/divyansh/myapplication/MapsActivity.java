@@ -19,8 +19,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -28,13 +32,19 @@ import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 
@@ -70,10 +80,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.example.divyansh.myapplication.R.id.enddtbtnfilter;
+import static com.example.divyansh.myapplication.R.id.startdtbtn;
+import static com.example.divyansh.myapplication.R.id.timeSwitch;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,GoogleMap.OnInfoWindowClickListener{
+        LocationListener,GoogleMap.OnInfoWindowClickListener,
+        View.OnClickListener{
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -98,15 +113,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Switch mCapacityFilterSwitch;
     Switch mTimeFilterSwitch;
     EditText mStartdateFilter;
-    //EditText mEnddateFilter;
+    EditText mEnddateFilter;
     EditText mStarttimeFilter;
-    //EditText mEndtimeFilter;
+    EditText mEndtimeFilter;
     ImageButton mStartdtbtnFilter;
+    ImageButton mEnddtbtnFilter;
     ImageButton mStarttimbtnFilter;
+    ImageButton mEndtimbtnFilter;
     View startTimeRowLayout;
+    View endTimeRowLayout;
     HashMap<String, String> mSubjectsMap;
     SeekBar rangeSeekBar2;
     Circle mCircle = null;
+    AutoCompleteTextView mSearchGroupBar;
+    DatePickerDialog mFilterfromDatePickerDialog;
+    TimePickerDialog mFilterfromTimePickerDialog;
+    DatePickerDialog mFiltertoDatePickerDialog;
+    TimePickerDialog mFiltertoTimePickerDialog;
+    SimpleDateFormat dateFormatter;
 
     String currentUser = "ranjini";
 
@@ -143,7 +167,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // custom dialog
                 final Dialog filterDialog = new Dialog(MapsActivity.this);
                 filterDialog.setContentView(R.layout.filter_groups);
-                filterDialog.setTitle("    Filter Groups");
+                filterDialog.setTitle("        Filter Groups");
 
                 mknnFilterSwitch = (Switch) filterDialog.findViewById(R.id.knnSwitch);
                 knnSeekBar = (SeekBar) filterDialog.findViewById(R.id.knnSeekbar);
@@ -157,6 +181,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mStarttimeFilter = (EditText) filterDialog.findViewById(R.id.start_time_filter);
                 mStartdtbtnFilter = (ImageButton) filterDialog.findViewById(R.id.startdtbtnfilter);
                 mStarttimbtnFilter = (ImageButton) filterDialog.findViewById(R.id.starttimbtnfilter);
+                endTimeRowLayout = (View) filterDialog.findViewById(R.id.endFilterTimeRow);
+                mEnddateFilter = (EditText) filterDialog.findViewById(R.id.end_date_filter);
+                mEndtimeFilter = (EditText) filterDialog.findViewById(R.id.end_time_filter);
+                mEnddtbtnFilter = (ImageButton) filterDialog.findViewById(R.id.enddtbtnfilter);
+                mEndtimbtnFilter = (ImageButton) filterDialog.findViewById(R.id.endtimbtnfilter);
+                dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
                 Button dialogButton2 = (Button) filterDialog.findViewById(R.id.dialogButtonOK2);
                 dialogButton2.setOnClickListener(new View.OnClickListener() {
@@ -171,6 +201,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 initializeFilterOptions();
+                setFilterDate();
+                setFilterTime();
             }
         });
 
@@ -244,6 +276,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(createIntent);
             }
         });
+
+        mSearchGroupBar = (AutoCompleteTextView) findViewById(R.id.searchGroupsBar);
+        setSearchFunctionality();
+    }
+
+    public void setSearchFunctionality(){
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, getSubjectsList());
+        mSearchGroupBar.setAdapter(adapter);
+        mSearchGroupBar.setThreshold(1);
+
+        mSearchGroupBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedSubject = (String) adapterView.getItemAtPosition(i);
+
+                String subid="";
+                Iterator it = mSubjectsMap.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry subidpair = (Map.Entry) it.next();
+                    String sub = (String) subidpair.getValue();
+                    if(selectedSubject.equals(sub))
+                    {
+                        subid = subidpair.getKey().toString();
+                    }
+                }
+
+                new FilterStudyGroups().execute("SerachSubjects",subid);
+            }
+        });
+    }
+
+    protected ArrayList<String> getSubjectsList()
+    {
+        ArrayList<String> subjects=new ArrayList<String>();
+        mSubjectsMap = new SubjectsMap().getSubjectMap();
+        Iterator it = mSubjectsMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry subidpair = (Map.Entry) it.next();
+            subjects.add((String) subidpair.getValue());
+        }
+        return subjects;
     }
 
     public void initializeFilterOptions(){
@@ -325,6 +400,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mStartdtbtnFilter.setVisibility(View.VISIBLE);
                     mStarttimbtnFilter.setVisibility(View.VISIBLE);*/
                     startTimeRowLayout.setVisibility(View.VISIBLE);
+                    endTimeRowLayout.setVisibility(View.VISIBLE);
                 } else {
                     /*mStartdateFilter.setVisibility(View.GONE);
                     mStarttimeFilter.setVisibility(View.GONE);
@@ -332,13 +408,100 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mStarttimbtnFilter.setVisibility(View.GONE);
                     */
                     startTimeRowLayout.setVisibility(View.GONE);
+                    endTimeRowLayout.setVisibility(View.GONE);
                 }
             }
         });
     }
 
     public void createFilterParameters(int groupCapacity, int filterknn){
-        new FilterStudyGroups().execute(String.valueOf(groupCapacity),String.valueOf(filterknn));
+
+        String filterStartTimestamp="";
+        String filterEndTimestamp="";
+        if(mTimeFilterSwitch.isChecked()){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            try {
+                Date startdateandtime = dateFormat.parse(mStartdateFilter.getText()+" "+mStarttimeFilter.getText());
+                Date enddateandtime = dateFormat.parse(mEnddateFilter.getText()+" "+mEndtimeFilter.getText());
+                filterStartTimestamp = Long.toString(startdateandtime.getTime());
+                filterEndTimestamp = Long.toString(enddateandtime.getTime());
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String keyParam1="";
+        String valParam1="";
+        String keyParam2="";
+        String valParam2="";
+        String keyParam3="";
+        String valParam3_1="";
+        String valParam3_2="";
+
+        if(groupCapacity!=0){
+            keyParam1 = "GroupCapacity";
+            valParam1 = String.valueOf(groupCapacity);
+        }
+        if(filterknn!=0){
+            keyParam2 = "Knn";
+            valParam2 = String.valueOf(filterknn);
+        }
+        if(filterEndTimestamp!=""){
+            keyParam3 = "TimeFilter";
+            valParam3_1 = filterStartTimestamp;
+            valParam3_2 = filterEndTimestamp;
+        }
+        new FilterStudyGroups().execute(keyParam1,valParam1,
+                keyParam2,valParam2,
+                keyParam3,valParam3_1,valParam3_2);
+    }
+
+    private void setFilterDate() {
+        mStartdtbtnFilter.setOnClickListener(this);
+        mEnddtbtnFilter.setOnClickListener(this);
+
+        Calendar newCalendar = Calendar.getInstance();
+        mFilterfromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                mStartdateFilter.setText(dateFormatter.format(newDate.getTime()));
+            }
+
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+         mFiltertoDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                mEnddateFilter.setText(dateFormatter.format(newDate.getTime()));
+            }
+
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+    }
+
+    private void setFilterTime() {
+        mStarttimbtnFilter.setOnClickListener(this);
+        mEndtimbtnFilter.setOnClickListener(this);
+
+        Calendar newCalendar = Calendar.getInstance();
+        mFilterfromTimePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+
+            public void onTimeSet(TimePicker timePicker, int Hour, int Minute) {
+                mStarttimeFilter.setText( Hour + ":" + Minute);
+            }
+        }, newCalendar.HOUR_OF_DAY, newCalendar.MINUTE, true);//Yes 24 hour time
+
+        mFiltertoTimePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+
+            public void onTimeSet(TimePicker timePicker, int Hour, int Minute) {
+                mEndtimeFilter.setText( Hour + ":" + Minute);
+            }
+        }, newCalendar.HOUR_OF_DAY, newCalendar.MINUTE, true);//Yes 24 hour time
     }
 
     /**
@@ -642,6 +805,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
     }
 
+    @Override
+    public void onClick(View view) {
+        if(view == mStartdtbtnFilter) {
+            mFilterfromDatePickerDialog.show();
+        } else if(view == mStarttimbtnFilter) {
+            mFilterfromTimePickerDialog.show();
+        } else if(view == mEnddtbtnFilter) {
+            mFiltertoDatePickerDialog.show();
+        } else if(view == mEndtimbtnFilter){
+            mFiltertoTimePickerDialog.show();
+        }
+    }
+
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         private View view;
@@ -862,14 +1038,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if(key[0].equals("Range")) {
                     url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "latitude=" + mLastLocation.getLatitude() + "&longitude=" + mLastLocation.getLongitude() + "&range=" + Integer.parseInt(key[1]);
-                } else {
-                    if (Integer.parseInt(key[0]) == 0) {
+                }
+                else if(key[0].equals("SerachSubjects")){
+                    url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "subjectId=" + key[1];
+                }
+                else {
+                    url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?";
+
+                    if(key[0].equals("GroupCapacity")){
+                        url = url + "maxCapacity=" + Integer.parseInt(key[1]);
+                    } else {
+                        url = url + "maxCapacity=" + 100;
+                    }
+                    if(key[2].equals("Knn")){
+                        url = url + "&latitude=" + mLastLocation.getLatitude() + "&longitude=" + mLastLocation.getLongitude() + "&k=" + Integer.parseInt(key[3]);
+                    }
+                    if(key[4].equals("TimeFilter")){
+                        url = url + "&startTimestamp=" + key[5] + "&endTimestamp=" + key[6];
+                    }
+                    /*if (Integer.parseInt(key[0]) == 0) {
                         url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "latitude=" + mLastLocation.getLatitude() + "&longitude=" + mLastLocation.getLongitude() + "&k=" + Integer.parseInt(key[1]);
                     } else if (Integer.parseInt(key[1]) == 0) {
                         url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "maxCapacity=" + Integer.parseInt(key[0]);
                     } else {
                         url = "http://studybuddy.tqz3d5cunm.us-west-2.elasticbeanstalk.com/searchGroups?" + "maxCapacity=" + Integer.parseInt(key[0]) + "&latitude=" + mLastLocation.getLatitude() + "&longitude=" + mLastLocation.getLongitude() + "&k=" + Integer.parseInt(key[1]);
-                    }
+                    }*/
                 }
 
                 URL obj = new URL(url);
