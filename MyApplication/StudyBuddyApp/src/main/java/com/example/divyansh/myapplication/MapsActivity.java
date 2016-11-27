@@ -137,7 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TimePickerDialog mFiltertoTimePickerDialog;
     SimpleDateFormat dateFormatter;
 
-    String currentUser = "ranjini";
+    String currentUser = "divyansh";
 
     StudyGroups[] mStudyGroups;
 
@@ -148,6 +148,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        currentUser =  getIntent().getStringExtra("username");
       /*  current_marker = getIntent().getBooleanExtra("curloc_marker",false);
         if(current_marker)
         {
@@ -801,8 +802,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // set the custom dialog components - text, image and button
         TextView text = (TextView) dialog.findViewById(R.id.subjectName);
         text.setText(marker.getSnippet());
+
+        String subid="2";
+        Iterator it = mSubjectsMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry subidpair = (Map.Entry) it.next();
+            String sub = (String) subidpair.getValue();
+            if(marker.getSnippet().equals(sub))
+            {
+                subid = subidpair.getKey().toString();
+            }
+        }
+        int Rid = MapsActivity.this.getApplicationContext().getResources().getIdentifier("gimg"+subid, "drawable", MapsActivity.this.getApplicationContext().getPackageName());
         ImageView image = (ImageView) dialog.findViewById(R.id.image);
-        image.setImageResource(R.drawable.gimg5);
+        image.setImageResource(Rid);
 
         TextView topics = (TextView) dialog.findViewById(R.id.topics);
         topics.setText("Topics : " + clickedGroup.mTopic);
@@ -822,7 +835,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView groupCapacityInfo = (TextView) dialog.findViewById(R.id.groupCapacityInfo);
         groupCapacityInfo.setText("Capacity : " + clickedGroup.mNumMembers + " of " + clickedGroup.mGroupCapacity);
 
-        Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+        final Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
         if(currentGroups!=null){
             for(int i=0;i<currentGroups.size();i++){
                 if(currentGroups.get(i)==Integer.parseInt(clickedGroup.mGroupId)){
@@ -901,35 +914,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             groupInfoButton = (Button) view.findViewById(R.id.markerInfoButton);
             mContext = view.getContext();
-            // add button listener
-            /*groupInfoButton.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-                    groupInfoButton.setText("qaz");
-                    // custom dialog
-                    final Dialog dialog = new Dialog(view.getContext());
-                    dialog.setContentView(R.layout.group_info_dialog);
-                    dialog.setTitle("Title...");
-
-                    // set the custom dialog components - text, image and button
-                    TextView text = (TextView) dialog.findViewById(R.id.text);
-                    text.setText("Android custom dialog example!");
-                    ImageView image = (ImageView) dialog.findViewById(R.id.image);
-                    image.setImageResource(R.drawable.ml);
-
-                    Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
-                    // if button is clicked, close the custom dialog
-                    dialogButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                        }
-                    });
-
-                    dialog.show();
+            final ImageView iv = (ImageView) view.findViewById(R.id.algoMarker);
+            String subid="2";
+            Iterator it = mSubjectsMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry subidpair = (Map.Entry) it.next();
+                String sub = (String) subidpair.getValue();
+                if(marker.getSnippet().equals(sub))
+                {
+                    subid = subidpair.getKey().toString();
                 }
-            });*/
+            }
+            int Rid = MapsActivity.this.getApplicationContext().getResources().getIdentifier("gimg"+subid, "drawable", MapsActivity.this.getApplicationContext().getPackageName());
+            iv.setImageResource(Rid);
 
             return view;
         }

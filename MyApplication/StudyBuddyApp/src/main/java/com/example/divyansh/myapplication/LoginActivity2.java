@@ -1,5 +1,7 @@
 package com.example.divyansh.myapplication;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -20,6 +22,8 @@ public class LoginActivity2 extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    SharedPreferences sharedpreferences;
 
     @InjectView(R.id.input_email) EditText _emailText;
     @InjectView(R.id.input_password) EditText _passwordText;
@@ -41,6 +45,14 @@ public class LoginActivity2 extends AppCompatActivity {
             }
         });
 
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String restoredText = sharedpreferences.getString("text", null);
+        if (restoredText != null) {
+            String uname = sharedpreferences.getString("username", "divyansh");//"No name defined" is the default value.
+            String pass = sharedpreferences.getString("password", "test123"); //0 is the default value.
+            _emailText.setText(uname);
+            _passwordText.setText(pass);
+        }
       /*  _signupLink.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -70,6 +82,12 @@ public class LoginActivity2 extends AppCompatActivity {
 
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
+        SharedPreferences.Editor editor = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE).edit();
+        //editor.putString("username", email.split("@")[0]);
+        editor.putString("username", email);
+        editor.putString("password", password);
+        editor.putString("text","text");
+        editor.commit();
 
         // TODO: Implement your own authentication logic here.
 
@@ -84,6 +102,7 @@ public class LoginActivity2 extends AppCompatActivity {
                 }, 3000);
 
         Intent login = new Intent(LoginActivity2.this, MapsActivity.class);
+        login.putExtra("username",email.split("@")[0]);
         startActivity(login);
     }
 
