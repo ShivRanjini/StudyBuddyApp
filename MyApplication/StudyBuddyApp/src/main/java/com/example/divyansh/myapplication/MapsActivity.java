@@ -24,6 +24,7 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -794,8 +795,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final StudyGroups clickedGroup = getInfoWindowStudyGroup(marker.getTitle());
         // custom dialog
         final Dialog dialog = new Dialog(MapsActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.group_info_dialog);
-        dialog.setTitle(marker.getTitle());
+        TextView groupName = (TextView) dialog.findViewById(R.id.groupNameInfo);
+        groupName.setText(marker.getTitle());
         new GetJoinedGroups().execute("random");
 
         // set the custom dialog components - text, image and button
@@ -817,7 +820,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Date enddate = new Date(clickedGroup.mEndTime);
         String duration = Long.toString(((enddate.getTime()-date.getTime())/(60 * 60 * 1000)))+" hrs";
         TextView groupTimeInfo = (TextView) dialog.findViewById(R.id.groupTime);
-        groupTimeInfo.setText("Time : " + starttime + "        Duration : " + duration);
+        groupTimeInfo.setText("Time : " + starttime + "              Duration : " + duration);
 
         TextView groupCapacityInfo = (TextView) dialog.findViewById(R.id.groupCapacityInfo);
         groupCapacityInfo.setText("Capacity : " + clickedGroup.mNumMembers + " of " + clickedGroup.mGroupCapacity);

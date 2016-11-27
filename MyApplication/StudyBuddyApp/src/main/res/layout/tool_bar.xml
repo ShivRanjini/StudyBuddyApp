@@ -10,29 +10,23 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
-        <ImageButton
-                android:id="@+id/PlusButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@android:drawable/ic_input_add"
-                android:layout_weight=".30"
-                android:background="@android:color/transparent"/>
-
 
             <AutoCompleteTextView
                 android:id="@+id/searchGroupsBar"
-                android:layout_width="wrap_content"
+                android:layout_width="200dip"
                 android:layout_weight=".50"
                 android:layout_height="match_parent"
-                android:hint="Search Study groups"
+                android:hint="Search study groups"
                 android:textSize="8pt"
                 android:textAppearance="@color/colorPrimary"
                 android:theme="@style/Autocomplete" />
 
             <ImageButton
+                android:id="@+id/PlusButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/newsearch"
+                android:paddingLeft="20dip"
+                android:src="@drawable/create"
                 android:layout_weight=".30"
                 android:layout_gravity="end"
                 android:background="@android:color/transparent"/>

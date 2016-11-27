@@ -9,9 +9,9 @@
     </style>
 
     <style name="Autocomplete" parent="Widget.AppCompat.Light.AutoCompleteTextView">
-        <item name="android:background">@color/DarkSalmon</item>
-        <item name="colorControlNormal">@color/DarkGray</item>
-        <item name="colorControlActivated">@color/DarkOrange</item>
+        <item name="android:background">@color/Snow</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
     </style>
 
 </resources>
