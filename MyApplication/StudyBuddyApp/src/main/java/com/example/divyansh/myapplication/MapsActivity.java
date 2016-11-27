@@ -158,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-
+        new GetJoinedGroups().execute("random");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -812,7 +812,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.setContentView(R.layout.group_info_dialog);
         TextView groupName = (TextView) dialog.findViewById(R.id.groupNameInfo);
         groupName.setText(marker.getTitle());
-        new GetJoinedGroups().execute("random");
+        //new GetJoinedGroups().execute("random");
 
         // set the custom dialog components - text, image and button
         TextView text = (TextView) dialog.findViewById(R.id.subjectName);
@@ -854,8 +854,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(currentGroups!=null){
             for(int i=0;i<currentGroups.size();i++){
                 if(currentGroups.get(i)==Integer.parseInt(clickedGroup.mGroupId)){
-                    //dialogButton.setVisibility(View.INVISIBLE);
-                    dialogButton.setEnabled(false);
+                    dialogButton.setVisibility(View.INVISIBLE);
+                    //dialogButton.setEnabled(false);
                 }
             }
         }
@@ -1025,7 +1025,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 URL obj = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
                 con.setRequestMethod("GET");
-
+                currentGroups.add(Integer.parseInt(key[0]));
                 int responseCode = con.getResponseCode();
             }catch(Exception e){
                 Log.w("Error", e.getMessage());
