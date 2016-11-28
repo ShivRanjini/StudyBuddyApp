@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class CreateScreen extends AppCompatActivity implements View.OnClickListener {
     TextView textView;
@@ -126,6 +127,7 @@ public class CreateScreen extends AppCompatActivity implements View.OnClickListe
                 String starttimestamp="";
                 String endtimestamp="";
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 try {
                     Date startdateandtime = dateFormat.parse(startdate.getText()+" "+starttime.getText());
                     Date enddateandtime = dateFormat.parse(enddate.getText()+" "+endtime.getText());

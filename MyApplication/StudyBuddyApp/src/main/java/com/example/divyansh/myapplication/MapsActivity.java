@@ -489,6 +489,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String filterEndTimestamp="";
         if(mTimeFilterSwitch.isChecked()){
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             try {
                 Date startdateandtime = dateFormat.parse(mStartdateFilter.getText()+" "+mStarttimeFilter.getText());
                 Date enddateandtime = dateFormat.parse(mEnddateFilter.getText()+" "+mEndtimeFilter.getText());
@@ -601,16 +602,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
         mMap.setOnInfoWindowClickListener(this);
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        /*mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
                 MarkerOptions marker = new MarkerOptions()
                         .position(new LatLng(point.latitude, point.longitude))
                         .title("New Marker");
                 mMap.addMarker(marker);
-                Toast.makeText(MapsActivity.this, String.valueOf(point.latitude),Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
     }
 
     protected synchronized void buildGoogleApiClient() {
