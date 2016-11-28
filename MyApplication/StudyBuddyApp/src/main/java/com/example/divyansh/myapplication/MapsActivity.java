@@ -2,6 +2,7 @@ package com.example.divyansh.myapplication;
 
 import android.app.*;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -86,6 +87,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.example.divyansh.myapplication.R.id.enddtbtnfilter;
 import static com.example.divyansh.myapplication.R.id.startdtbtn;
 import static com.example.divyansh.myapplication.R.id.timeSwitch;
@@ -141,6 +144,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String currentUser = "divyansh";
 
     StudyGroups[] mStudyGroups;
+    SharedPreferences sharedpreferences;
+    public static final String MyPREFERENCES = "MyPrefs" ;
 
     ArrayList<Integer> currentGroups;
 
@@ -149,7 +154,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        currentUser =  getIntent().getStringExtra("username");
+        currentUser = getUser();
+        //currentUser =  getIntent().getStringExtra("username");
       /*  current_marker = getIntent().getBooleanExtra("curloc_marker",false);
         if(current_marker)
         {
@@ -237,7 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 rangeProgress = progress;
                 CircleOptions circleOptions = new CircleOptions();
 
-                    circleOptions.fillColor(Color.parseColor("#447755ff"));
+                    circleOptions.fillColor(Color.parseColor("#B0E0E6"));
                     circleOptions.strokeColor(Color.TRANSPARENT);
                     circleOptions.center(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
                     circleOptions.radius(rangeProgress*50);
@@ -271,6 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
                 listIntent.putExtra("StudyGroups",mStudyGroups);
                 listIntent.putExtra("CallType","ListView");
+                listIntent.putExtra("username",currentUser);
                 startActivity(listIntent);
             }
         });
@@ -282,6 +289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent createIntent = new Intent(MapsActivity.this, CreateScreen.class);
                 createIntent.putExtra("Latitude",mLastLocation.getLatitude());
                 createIntent.putExtra("Longitude",mLastLocation.getLongitude());
+                createIntent.putExtra("username",currentUser);
                 startActivity(createIntent);
             }
         });
@@ -293,6 +301,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toggle.syncState();
 
         NavigationView navmenu = (NavigationView) findViewById(R.id.nav_view);
+        View navLayout = navmenu.getHeaderView(0);
+        TextView profileUsername = (TextView) navLayout.findViewById(R.id.ProfileUserName);
+        //String profileUser = currentUser;
+        //profileUsername.setText(profileUser.substring(0,1).toUpperCase() + profileUser.substring(1,currentUser.length()));
+        profileUsername.setText(currentUser);
+        //profileUsername.setText(currentUser);
+        CircleImageView profilePic = (CircleImageView) navLayout.findViewById(R.id.profile_image);
+        int Rid = MapsActivity.this.getApplicationContext().getResources().getIdentifier(""+currentUser, "drawable", MapsActivity.this.getApplicationContext().getPackageName());
+        profilePic.setImageResource(Rid);
+
         navmenu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -301,14 +319,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (id == R.id.fav) {
                     Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
                     listIntent.putExtra("CallType","Favorite");
+                    listIntent.putExtra("username",currentUser);
                     startActivity(listIntent);
                 } else if (id == R.id.mygro) {
                     Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
                     listIntent.putExtra("CallType","MyGroup");
+                    listIntent.putExtra("username",currentUser);
                     startActivity(listIntent);
                 } else if (id == R.id.joined) {
                     Intent listIntent = new Intent(MapsActivity.this, ListActivity.class);
                     listIntent.putExtra("CallType","JoinedGroup");
+                    listIntent.putExtra("username",currentUser);
                     startActivity(listIntent);
                 }
 
@@ -321,6 +342,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mSearchGroupBar = (AutoCompleteTextView) findViewById(R.id.searchGroupsBar);
         setSearchFunctionality();
+    }
+
+    public String getUser(){
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        String uname = sharedpreferences.getString("username", "divyansh");//"No name defined" is the default value.
+        return uname;
     }
 
     public void setSearchFunctionality(){
@@ -974,7 +1002,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected void onPostExecute(String groupResponse) {
-            Log.d("My message",groupResponse);
+            //Log.d("My message",groupResponse);
             mMap.clear();
             plotCurrentUserLocation();
             try {
@@ -995,17 +1023,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             groupInfo.getString("locationName"),
                             groupInfo.getDouble("latitude"),
                             groupInfo.getDouble("longitude"));
-                    Log.d("GroupId ",groupInfo.getString("id"));
-                    Log.d("SubjectId ",groupInfo.getString("subjectId"));
-                    Log.d("groupName ",groupInfo.getString("groupName"));
-                    Log.d("adminId ",groupInfo.getString("adminId"));
-                    Log.d("startTimestamp ",String.valueOf(groupInfo.getLong("startTimestamp")));
-                    Log.d("endTimestamp ", String.valueOf(groupInfo.getLong("endTimestamp")));
-                    Log.d("capacity ",String.valueOf(groupInfo.getInt("capacity")));
-                    Log.d("numMembers ",String.valueOf(groupInfo.getInt("numMembers")));
-                    Log.d("locationName ",groupInfo.getString("locationName"));
-                    Log.d("latitude ",String.valueOf(groupInfo.getDouble("latitude")));
-                    Log.d("longitude ", String.valueOf(groupInfo.getDouble("longitude")));
                 }
 
                 plotStudyGroups();
@@ -1134,7 +1151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected void onPostExecute(String groupResponse) {
-            Log.d("My message",groupResponse);
+            //Log.d("My message",groupResponse);
             mMap.clear();
             plotCurrentUserLocation();
             try {

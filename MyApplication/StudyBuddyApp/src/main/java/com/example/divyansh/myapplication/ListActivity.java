@@ -1,7 +1,9 @@
 package com.example.divyansh.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,18 +45,22 @@ public class ListActivity extends Activity {
     static final String ISFAV = "isfav";
     String username = "ranjini";
     ArrayList<HashMap<String, String>> GroupList;
+    List<StudyGroups> groupList;
     StudyGroups[] studygroups;
     ListView list;
     LazyAdapter adapter;
     ArrayList<Integer> joinedgrouplist;
     String type;
+    SharedPreferences sharedpreferences;
+    public static final String MyPREFERENCES = "MyPrefs" ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         type =  getIntent().getStringExtra("CallType");
-
+        //username = getIntent().getStringExtra("username");
+        username = getUser();
         list=(ListView)findViewById(R.id.list);
         if(type.equals("ListView")) {
             studygroups = (StudyGroups[]) getIntent().getSerializableExtra("StudyGroups") ;
@@ -83,7 +89,7 @@ public class ListActivity extends Activity {
                 if(like_image.getTag().equals("star_off")) {
                     like_image.setImageResource(R.drawable.fav_on);
                     FavGroup postReq = new FavGroup();
-                    postReq.execute("ranjini",studygroups[position].mGroupId);
+                    postReq.execute(username,groupList.get(position).mGroupId);
 
                     like_image.setTag("star_on");
                 }
@@ -104,6 +110,12 @@ public class ListActivity extends Activity {
         });
 
     }
+    public String getUser(){
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        String uname = sharedpreferences.getString("username", "divyansh");//"No name defined" is the default value.
+        return uname;
+    }
     @Override
     public void onBackPressed() {
         if(type.equals("MyGroup")) {
@@ -118,7 +130,7 @@ public class ListActivity extends Activity {
     public void setListOfGroups(StudyGroups[] studygroups,List<Integer> favGroup) {
         GroupList = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> groupinfo;
-        List<StudyGroups> groupList = new ArrayList<StudyGroups>();
+        groupList = new ArrayList<StudyGroups>();
         for (int i = 0; i < studygroups.length; i++){
             groupList.add(studygroups[i]);
         }

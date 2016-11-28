@@ -49,8 +49,9 @@ public class LoginActivity2 extends AppCompatActivity {
         String restoredText = sharedpreferences.getString("text", null);
         if (restoredText != null) {
             String uname = sharedpreferences.getString("username", "divyansh");//"No name defined" is the default value.
+            String email = sharedpreferences.getString("email", "divyansh@usc.edu");
             String pass = sharedpreferences.getString("password", "test123"); //0 is the default value.
-            _emailText.setText(uname);
+            _emailText.setText(email);
             _passwordText.setText(pass);
         }
       /*  _signupLink.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +85,8 @@ public class LoginActivity2 extends AppCompatActivity {
         String password = _passwordText.getText().toString();
         SharedPreferences.Editor editor = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE).edit();
         //editor.putString("username", email.split("@")[0]);
-        editor.putString("username", email);
+        editor.putString("username", email.split("@")[0]);
+        editor.putString("email",email);
         editor.putString("password", password);
         editor.putString("text","text");
         editor.commit();

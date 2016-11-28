@@ -3,7 +3,9 @@ package com.example.divyansh.myapplication;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -67,10 +69,16 @@ public class CreateScreen extends AppCompatActivity implements View.OnClickListe
     private StudyGroups mStudyGroup;
     private double latitude;
     private  double longitude;
+    String user = "divyansh";
+    SharedPreferences sharedpreferences;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_screen);
+        //user = getIntent().getStringExtra("username");
+        user = getUser();
         latitude =(double) getIntent().getDoubleExtra("Latitude",0.0);
         longitude =(double) getIntent().getDoubleExtra("Longitude",0.0);
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -127,7 +135,6 @@ public class CreateScreen extends AppCompatActivity implements View.OnClickListe
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                String user = "ranjini";
                 CreateGroup postReq = new CreateGroup();
                 postReq.execute(subid,grpName,user,starttimestamp,endtimestamp,cap,topic,locdet,Double.toString(latitude),Double.toString(longitude));
                 Intent MapIntent = new Intent(CreateScreen.this,MapsActivity.class);
@@ -201,7 +208,12 @@ public class CreateScreen extends AppCompatActivity implements View.OnClickListe
 
         },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
     }
+    public String getUser(){
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
+        String uname = sharedpreferences.getString("username", "divyansh");//"No name defined" is the default value.
+        return uname;
+    }
     protected void populateSubjectDropDown()
     {
         ArrayList<String> subjects=new ArrayList<String>();
