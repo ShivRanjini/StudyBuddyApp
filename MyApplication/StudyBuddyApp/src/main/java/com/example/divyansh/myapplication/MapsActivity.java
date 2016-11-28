@@ -177,6 +177,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mSearchGroupBar != null){
+                    mSearchGroupBar.setText("");
+                }
                 // custom dialog
                 final Dialog filterDialog = new Dialog(MapsActivity.this);
                 filterDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
