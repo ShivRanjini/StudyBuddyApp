@@ -81,10 +81,12 @@
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:text="Join"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
-        android:backgroundTint="@color/colorAccent"
+        android:background="@color/colorAccent"
         android:textColor="@android:color/white"
         android:textSize="15dp"
         android:layout_below="@+id/groupCapacityInfo"/>
